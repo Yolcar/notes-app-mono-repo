@@ -3,9 +3,10 @@ module.exports = {
     browser: true,
     es2021: true,
     node: true,
-    cypress: true,
-    jest: true
+    jest: true,
+    'cypress/globals': true
   },
+  ignorePatterns: ['node_modules', 'dist', 'coverage', 'cypress'],
   extends: [
     'standard',
     'plugin:react/recommended',

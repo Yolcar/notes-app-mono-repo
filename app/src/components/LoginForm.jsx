@@ -3,7 +3,7 @@ import Togglable from './Togglable'
 import loginService from '../services/login'
 import noteService from '../services/notes'
 
-export default function LoginForm ({setUser, setErrorMessage}) {
+export default function LoginForm ({ setUser, setErrorMessage }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
