@@ -1,68 +1,46 @@
-import { useState } from 'react'
-import Togglable from './Togglable'
-import loginService from '../services/login'
-import noteService from '../services/notes'
+import { useNavigate } from 'react-router-dom'
+import { useField } from '../hooks/useField'
+import { useUser } from '../hooks/useUser'
 
 export default function LoginForm ({ setUser, setErrorMessage }) {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const username = useField({ type: 'text' })
+  const password = useField({ type: 'password' })
+  const { login } = useUser()
+  const navigate = useNavigate()
 
   const handleLogin = async (event) => {
-    try {
-      event.preventDefault()
+    event.preventDefault()
 
-      const user = await loginService.login({ username, password })
-
-      window.localStorage.setItem(
-        'loggedNoteappUser', JSON.stringify(user)
-      )
-
-      noteService.setToken(user.token)
-
-      setUser(user)
-      setUsername('')
-      setPassword('')
-    } catch (error) {
-      setErrorMessage('Wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-    }
-  }
-
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value)
-  }
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value)
+    login({ username: username.value, password: password.value }).then(() => {
+      navigate('/notes')
+    })
+      .catch(() => {
+        setErrorMessage('Wrong credentials')
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 2000)
+      })
   }
 
   return (
-    <Togglable buttonLabel='Show login'>
-        <form onSubmit={handleLogin}>
-          <div>
-            <input
-              data-testid='username'
-              type='text'
-              value={username}
-              name='Username'
-              placeholder='Username'
-              onChange={handleUsernameChange}
-            />
-          </div>
-          <div>
-            <input
-              data-testid='password'
-              type='password'
-              value={password}
-              name='Password'
-              placeholder='Password'
-              onChange={handlePasswordChange}
-            />
-          </div>
-          <button type='submit'>login</button>
-        </form>
-    </Togglable>
+      <form onSubmit={handleLogin}>
+        <div>
+          <input
+            {...username}
+            data-testid='username'
+            name='Username'
+            placeholder='Username'
+          />
+        </div>
+        <div>
+          <input
+            {...password}
+            data-testid='password'
+            value={password}
+            placeholder='Password'
+          />
+        </div>
+        <button type='submit'>login</button>
+      </form>
   )
 }
